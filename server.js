@@ -1,11 +1,17 @@
 const express = require("express");
 require("dotenv").config();
+const cors = require('cors')
 
 const {con} = require('./db');
 const routes = require("./routes");
 const port = process.env.PORT || 5000;
 
 const app = express()
+app.use(cors({
+	"origin": "*",
+	"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+	"preflightContinue": false,
+}))
 app.use(express.json());
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }));
@@ -17,12 +23,9 @@ con.connect(function (err) {
 });
 
 app.get("/",function(request,response){
-response.send("welcome")
-})
-
-
+	response.send("welcome")
+});
 app.use("/api/v1", routes);
-
 app.listen(port, function () {
-console.log("Started application on port %d", port)
+	console.log("Started application on port %d", port)
 });
