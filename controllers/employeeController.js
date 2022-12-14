@@ -205,11 +205,6 @@ const employeeResetPassword = async (req, res) => {
 
 
 module.exports = {
-    employeeAll,
-    getEmployee,
-    employeeCreate,
-    employeeUpdate,
-    employeeDelete,
-    employeeStatus,
+    employeeAll, getEmployee, employeeCreate, employeeUpdate, employeeDelete, employeeStatus,
     employeeResetPassword
 }

@@ -18,6 +18,7 @@ const VendorCreateSchema = Joi.object({
     business_name: Joi.string().required(),
     business_phone: Joi.number().required(),   
     alternate_phone: Joi.optional(),  
+    business_address: Joi.optional(),
 })
 
 
@@ -28,6 +29,7 @@ const VendorUpdateSchema = Joi.object({
     business_name: Joi.string().required(),
     business_phone: Joi.number().required(),   
     alternate_phone: Joi.optional(),
+    business_address: Joi.optional(),
 })
 
 const employeeSchema = Joi.object({
