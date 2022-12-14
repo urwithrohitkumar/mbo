@@ -30,6 +30,11 @@ const VendorUpdateSchema = Joi.object({
     alternate_phone: Joi.optional(),
 })
 
+const employeeSchema = Joi.object({
+    name: Joi.string().required(),
+    password: Joi.string().required(),
+    role_id: Joi.string().required()
+});
 
 
-module.exports = {signupSchema, VendorCreateSchema, VendorUpdateSchema}
+module.exports = {signupSchema, VendorCreateSchema, VendorUpdateSchema, employeeSchema}

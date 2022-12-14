@@ -128,20 +128,25 @@ const getAllUsers = async (req, res) => {
         const { email } = req.body;
         const getUserQuery = `SELECT * FROM user WHERE email = '${email}'`
         con.query(getUserQuery, async (err, result)=>{
-            const user_id = result[0].id;
-            const otp = 123456;
-           // const otp = rand(100000,999999);
-            const userForgotQuery = `UPDATE user SET otp='${otp}' WHERE id = ${user_id}`;
-            con.query(userForgotQuery, async(error, result) => {
-                if(error){
-                    return res.status(500).json({ "status" : false, "message" : error });
-                }
-                if(result.affectedRows){
-                    return res.status(200).json({"status":true, "message": "OTP send successfully"});
-                }else{
-                    return res.status(400).json({"status":false, "message": "OTP send unsuccessfully"});
-                }
-            })
+            if(err) return res.status(500).json({ "status": false, "message" : err.sqlMessage });
+            if(result.length > 0){
+                const user_id = result[0].id;
+                const otp = 123456;
+                // const otp = rand(100000,999999);
+                const userForgotQuery = `UPDATE user SET otp='${otp}' WHERE id = ${user_id}`;
+                con.query(userForgotQuery, async(error, resultUpdate) => {
+                    if(error){
+                        return res.status(500).json({ "status" : false, "message" : error });
+                    }
+                    if(resultUpdate.affectedRows){
+                        return res.status(200).json({"status":true, "message": "OTP send successfully"});
+                    }else{
+                        return res.status(400).json({"status":false, "message": "OTP send unsuccessfully"});
+                    }
+                });
+            }else{
+                res.status(500).json({ "status" :false, "message" : "Email not found" });
+            }
         });
     }catch(error){
         return res.status(500).json({ "status":false, "message":error.message });
@@ -179,7 +184,7 @@ const getAllUsers = async (req, res) => {
    * @param {*} req 
    * @param {*} res 
    */
-  const userRestPassword = async (req, res) =>{
+  const userResetPassword = async (req, res) =>{
     try{
         const { email, password } = req.body;
         const salt = bcrypt.genSaltSync(10);
@@ -202,12 +207,12 @@ const getAllUsers = async (req, res) => {
 
 
 
-  module.exports = {
+module.exports = {
     getAllUsers, 
     createUser, 
     loginUser, 
     getUserDetail, 
     userForgotPassword, 
     userOtpVerify,
-    userRestPassword
+    userResetPassword
 }

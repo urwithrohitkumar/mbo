@@ -288,11 +288,11 @@ const vendorForgotPassword = async (req, res) => {
                 const otp = 123456;
                 // const otp = rand(100000,999999);
                 const userForgotQuery = `UPDATE vendor SET otp='${otp}' WHERE id = ${user_id}`;
-                con.query(userForgotQuery, async(error, result) => {
+                con.query(userForgotQuery, async(error, resultUpdate) => {
                     if(error){
                         return res.status(500).json({ "status" : false, "message" : error });
                     }
-                    if(result.affectedRows){
+                    if(resultUpdate.affectedRows){
                         return res.status(200).json({"status":true, "message": "OTP send successfully"});
                     }else{
                         return res.status(400).json({"status":false, "message": "OTP send unsuccessfully"});
@@ -357,7 +357,6 @@ const vendorChangePassword = async (req, res) => {
         return res.status(500).json({"status":false, "message":error.message});
     }
 }
-
 
 
 module.exports = { 
