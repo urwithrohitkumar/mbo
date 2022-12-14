@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 const { con } = require('../db');
 const { signupSchema } = require('../helpers/validation');
+const fs = require('fs');
 
 /**
  *  get all users.
@@ -205,6 +206,55 @@ const getAllUsers = async (req, res) => {
     }
   } 
 
+  /**
+   * upload user profile
+   * @param {*} req 
+   * @param {*} res 
+   * @returns 
+   */
+  const userUploadProfile = async (req, res) => {
+    try{
+        const userID = req.params.userID; 
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({"status":false, "message":"No files were uploaded." });
+        }
+        // -------------------- unlink old profile start ------------------
+        const userQuery = `select image from user WHERE id="${userID}"`;
+        con.query(userQuery, async (error, result) => {           
+            if(result.length>0){
+                if(result[0].image!= null)
+                fs.unlinkSync(process.cwd() + result[0].image);
+            }
+        });
+        // -------------------- end ------------------
+        sampleFile = req.files.profile;   
+        let fileName = Date.now()+sampleFile.name    
+        const uploadPath =  process.cwd() +'/public/user_profile/' + fileName;
+        const storePath = '/public/user_profile/' + fileName;
+      
+        // ----------- Use the mv() method to place the file 
+        sampleFile.mv(uploadPath, function(err) {
+            if (err)
+            return res.status(500).json({"status": false, "message" : err});
+            // -------------  Store file in database....
+            const userProfileQuery = `UPDATE user SET image='${storePath}' WHERE id="${userID}"`;
+            con.query(userProfileQuery, async (error, result) => {
+                if(error){
+                    return res.status(500).json({ "status" : false, "message" : error });
+                } 
+                if(result.affectedRows>0){
+                    return res.status(200).json({"status": true, "message" : "File uploaded successfully!" });
+                }else{
+                    return res.status(400).json({"status": false,"message": "User not found."});
+                }
+            });  
+            // ----------------------------------------------          
+        });
+        // --------------------------------------------------
+    }catch(error){
+        return res.status(500).json({ "status" : false,"message" : error.message});
+    }
+  }
 
 
 module.exports = {
@@ -214,5 +264,6 @@ module.exports = {
     getUserDetail, 
     userForgotPassword, 
     userOtpVerify,
-    userResetPassword
+    userResetPassword,
+    userUploadProfile
 }

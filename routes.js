@@ -1,17 +1,16 @@
 const express = require('express')
 /** * user controller  */
-const { getAllUsers, createUser, loginUser, getUserDetail, userForgotPassword,
-    userOtpVerify, userResetPassword } = require('./controllers/userController');
+const { getAllUsers, createUser, loginUser, getUserDetail, userForgotPassword, userOtpVerify, 
+    userResetPassword, userUploadProfile } = require('./controllers/userController');
 
 /** * Vendor controller  */
-const { getAllVendor, vendorCreate, getVendorDetials, vendorDetialsUpdate,
-    vendorDetialsDelete, vendorStatusUpdate, vendorSubscription, 
-    vendorResetPassword, vendorLogin, vendorForgotPassword, vendorOtpVerify,
-    vendorChangePassword } = require('./controllers/vendorController');
+const { getAllVendor, vendorCreate, getVendorDetials, vendorDetialsUpdate, vendorDetialsDelete,
+    vendorStatusUpdate, vendorSubscription, vendorResetPassword, vendorLogin, vendorForgotPassword, 
+    vendorOtpVerify, vendorChangePassword, vendorUploadProfile } = require('./controllers/vendorController');
 
 /** * Employee Controller  */
-const { employeeCreate, employeeAll, getEmployee, employeeUpdate, 
-    employeeDelete, employeeStatus, employeeResetPassword } = require('./controllers/employeeController');    
+const { employeeCreate, employeeAll, getEmployee, employeeUpdate, employeeDelete, employeeStatus, 
+    employeeResetPassword } = require('./controllers/employeeController');    
 
 /** * validation helper  */
 const authenticateToken = require('./helpers/verifyjwt')
@@ -26,6 +25,7 @@ routes.get('/user/detail', authenticateToken,  getUserDetail)
 routes.post('/user/forgot-password', userForgotPassword)
 routes.post('/user/otp-verify', userOtpVerify)
 routes.post('/user/reset-password', userResetPassword)
+routes.post('/user/upload-profile/:userID', userUploadProfile)
 
 
 /** * Vendor Routes */
@@ -41,6 +41,7 @@ routes.put('/vendor/status/:vendorID', authenticateToken,  vendorStatusUpdate)
 routes.put('/vendor/subscription/:vendorID', authenticateToken,  vendorSubscription)
 routes.put('/vendor/reset-password/:vendorID', authenticateToken,  vendorResetPassword)
 routes.delete('/vendor/delete/:vendorID', authenticateToken,  vendorDetialsDelete)
+routes.post('/vendor/upload-profile/:vendorID', vendorUploadProfile)
 
 
 /** * Employee Routes */

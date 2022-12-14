@@ -52,7 +52,7 @@ const employeeAll = async (req, res )=>{
         con.query(getAllEmployee, async(error,result)=> {
             if(error) return res.status(500).json({"status":false, "message":error});
             if(result.length>0 ){
-                return res.status(500).json({"status": true, "message":result});
+                return res.status(200).json({"status": true, "data":result});
             }else{
                 return res.status(400).json({"status" : false, "message" : "No Employee Found."});
             }
@@ -81,7 +81,7 @@ const getEmployee = async (req, res) => {
         con.query(getEmployee, async(error,result)=> {
             if(error) return res.status(500).json({"status":false, "message":error});
             if(result.length>0 ){
-                return res.status(500).json({"status": true, "message":result});
+                return res.status(200).json({"status": true, "data":result});
             }else{
                 return res.status(400).json({"status" : false, "message" : "No Employee Found."});
             }
@@ -113,7 +113,7 @@ const employeeUpdate = async (req, res) => {
         con.query(updateEmployee, async(error,result)=> {
             if(error) return res.status(500).json({"status":false, "message":error});
             if(result.affectedRows>0 ){
-                return res.status(500).json({"status": true, "message":"Employee update successfully"});
+                return res.status(200).json({"status": true, "message":"Employee update successfully"});
             }else{
                 return res.status(400).json({"status" : false, "message" : "No Employee Found."});
             }
@@ -137,7 +137,7 @@ const employeeDelete = async (req, res) => {
         con.query(deleteEmployeeQuery, async(error,result)=> {
             if(error) return res.status(500).json({"status":false, "message":error});
             if(result.affectedRows>0 ){
-                return res.status(500).json({"status": true, "message":"Employee record deleted successfully."});
+                return res.status(200).json({"status": true, "message":"Employee record deleted successfully."});
             }else{
                 return res.status(400).json({"status" : false, "message" : "No Employee Found."});
             }
@@ -166,7 +166,7 @@ const employeeStatus = async (req, res) => {
         con.query(updateEmployee, async(error,result)=> {
             if(error) return res.status(500).json({"status":false, "message":error});
             if(result.affectedRows>0 ){
-                return res.status(500).json({"status": true, "message":"Employee status update successfully"});
+                return res.status(200).json({"status": true, "message":"Employee status update successfully"});
             }else{
                 return res.status(400).json({"status" : false, "message" : "No Employee Found."});
             }

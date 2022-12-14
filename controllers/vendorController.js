@@ -3,6 +3,8 @@ const { number } = require('joi');
 var jwt = require('jsonwebtoken');
 const { con } = require('../db');
 const { VendorCreateSchema , VendorUpdateSchema} = require('../helpers/validation');
+const fs = require('fs');
+
 
   /**
    * create vendor
@@ -146,6 +148,15 @@ const vendorDetialsUpdate = async (req, res) => {
 const vendorDetialsDelete = async (req, res) => {
     try{
         const vendorID = req.params.vendorID;
+        // -------------------- unlink old profile start ------------------
+        const vendorQuery = `select image from vendor WHERE id="${vendorID}"`;      
+        con.query(vendorQuery, async (error, oldResult) => {            
+            if(oldResult.length>0){              
+                if(oldResult[0].image!= null)
+                fs.unlinkSync(process.cwd() + oldResult[0].image);
+            }
+        });
+        // -------------------- end ------------------
         const deleteVendorQuery = ` DELETE FROM vendor WHERE id = ${vendorID}`;
         con.query(deleteVendorQuery, async (error, result) => {   
             if(error){
@@ -249,19 +260,24 @@ const vendorResetPassword = async (req, res) => {
 const vendorLogin = async (req, res) => {
     try {   
         const { email, password } = req.body;
-        const vendorLoginQuery = `select * from vendor where business_email = "${email}"`;     
+        const vendorLoginQuery = `select * from vendor where business_email = "${email}" `;     
         con.query(vendorLoginQuery, async (error, result) => {
             if(error){
                 return res.status(500).json({"status": false, "message": error});
             }
             if(result.length > 0){
-                const isCorrectPass = await bcrypt.compare(password, result[0].password)
+                const isCorrectPass = await bcrypt.compare(password, result[0].password); 
+                if(result[0].status==0) 
+                return res.status(400).json({status:false, message : "Your account is not active."});
+                
                 if(isCorrectPass){
                     delete result[0].password;                   
                     return res.status(200).json({status:true, message : "Vendor Login successfully", data: result[0] })
                 }else{
                     return res.status(400).json({ status:false, message : "Wrong Credentials" });
                 }
+            }else{
+                return res.status(400).json({status:false, message : "Wrong Credentials"});
             }
         });
     }catch (error){
@@ -358,6 +374,57 @@ const vendorChangePassword = async (req, res) => {
     }
 }
 
+/**
+ * vendor upload profile
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const vendorUploadProfile = async (req, res) => {
+    try{
+        const vendorID = req.params.vendorID;       
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({"status":false, "message":"No files were uploaded." });
+        }
+        // -------------------- unlink old profile start ------------------
+        const vendorQuery = `select image from vendor WHERE id="${vendorID}"`;      
+        con.query(vendorQuery, async (error, result) => {            
+            if(result.length>0){              
+                if(result[0].image!= null)
+                fs.unlinkSync(process.cwd() + result[0].image);
+            }
+        });
+        // -------------------- end ------------------
+        sampleFile = req.files.profile;   
+        let fileName = Date.now()+sampleFile.name    
+        const uploadPath =  process.cwd() +'/public/vendor_profile/' + fileName;
+        const storePath = '/public/vendor_profile/' + fileName;
+      
+        // ----------- Use the mv() method to place the file 
+        sampleFile.mv(uploadPath, function(err) {
+            if (err)
+            return res.status(500).json({"status": false, "message" : err});
+            // -------------  Store file in database....
+            const vendorProfileQuery = `UPDATE vendor SET image='${storePath}' WHERE id="${vendorID}"`;
+            con.query(vendorProfileQuery, async (error, result) => {
+                if(error){
+                    return res.status(500).json({ "status" : false, "message" : error });
+                } 
+                if(result.affectedRows>0){
+                    return res.status(200).json({"status": true, "message" : "File uploaded successfully!" });
+                }else{
+                    return res.status(400).json({"status": false,"message": "User not found."});
+                }
+            });  
+            // ----------------------------------------------          
+        });
+        // --------------------------------------------------
+    }catch(error){
+        return res.status(500).json({"status":false,"message":error.message });
+    }
+}
+
+
 
 module.exports = { 
     getAllVendor, 
@@ -371,5 +438,6 @@ module.exports = {
     vendorLogin,
     vendorForgotPassword,
     vendorOtpVerify,
-    vendorChangePassword
+    vendorChangePassword,
+    vendorUploadProfile
 }
