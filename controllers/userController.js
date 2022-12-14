@@ -66,7 +66,7 @@ const getAllUsers = async (req, res) => {
    * @param {*} res 
    * @returns 
    */
-  const loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
     try {
         const {email, password} = req.body
         const getUserQuery = `SELECT * FROM user WHERE email = '${email}'`

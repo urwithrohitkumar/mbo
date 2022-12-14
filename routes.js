@@ -6,7 +6,8 @@ const { getAllUsers, createUser, loginUser, getUserDetail, userForgotPassword, u
 /** * Vendor controller  */
 const { getAllVendor, vendorCreate, getVendorDetials, vendorDetialsUpdate, vendorDetialsDelete,
     vendorStatusUpdate, vendorSubscription, vendorResetPassword, vendorLogin, vendorForgotPassword, 
-    vendorOtpVerify, vendorChangePassword, vendorUploadProfile } = require('./controllers/vendorController');
+    vendorOtpVerify, vendorChangePassword, vendorUploadProfile, vendorRequest, vendorAllRequest,
+    vendorRequestApprove, vendorRequestReject } = require('./controllers/vendorController');
 
 /** * Employee Controller  */
 const { employeeCreate, employeeAll, getEmployee, employeeUpdate, employeeDelete, employeeStatus, 
@@ -14,6 +15,7 @@ const { employeeCreate, employeeAll, getEmployee, employeeUpdate, employeeDelete
 
 /** * validation helper  */
 const authenticateToken = require('./helpers/verifyjwt')
+const authenticateVendorToken = require('./helpers/verifyVenderjwt')
 const routes = express.Router()
 
 
@@ -28,11 +30,17 @@ routes.post('/user/reset-password', userResetPassword)
 routes.post('/user/upload-profile/:userID', userUploadProfile)
 
 
+
 /** * Vendor Routes */
+// ----- vendor routes for vendor ------
 routes.post('/vendor/login', vendorLogin)
 routes.post('/vendor/forgot-password', vendorForgotPassword)
 routes.post('/vendor/otp-verify', vendorOtpVerify)
 routes.post('/vendor/change-password', vendorChangePassword)
+routes.post('/vendor/request', vendorRequest)
+routes.post('/vendor/upload-profile/:vendorID', authenticateVendorToken, vendorUploadProfile)
+
+// ----- vendor routes for admin ------
 routes.get('/vendor/all', authenticateToken,  getAllVendor)
 routes.get('/vendor/:vendorID', authenticateToken,  getVendorDetials)
 routes.post('/vendor/create', authenticateToken,  vendorCreate)
@@ -41,10 +49,12 @@ routes.put('/vendor/status/:vendorID', authenticateToken,  vendorStatusUpdate)
 routes.put('/vendor/subscription/:vendorID', authenticateToken,  vendorSubscription)
 routes.put('/vendor/reset-password/:vendorID', authenticateToken,  vendorResetPassword)
 routes.delete('/vendor/delete/:vendorID', authenticateToken,  vendorDetialsDelete)
-routes.post('/vendor/upload-profile/:vendorID', vendorUploadProfile)
+routes.get('/vendor/all/request', authenticateToken, vendorAllRequest)
+routes.get('/vendor/request-approve/:requestID', authenticateToken, vendorRequestApprove)
+routes.get('/vendor/request-reject/:requestID', authenticateToken, vendorRequestReject)
 
 
-/** * Employee Routes */
+/** * Employee Routes */    
 routes.get('/employee/all', authenticateToken,  employeeAll)
 routes.get('/employee/:employeeID', authenticateToken,  getEmployee)
 routes.post('/employee/create', authenticateToken,  employeeCreate)
