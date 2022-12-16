@@ -1,7 +1,7 @@
 const express = require('express')
 /** * user controller  */
 const { getAllUsers, createUser, loginUser, getUserDetail, userForgotPassword, userOtpVerify, 
-    userResetPassword, userUploadProfile } = require('./controllers/userController');
+    userResetPassword, userUploadProfile, userDetailsUpdate } = require('./controllers/userController');
 
 /** * Vendor controller  */
 const { getAllVendor, vendorCreate, getVendorDetials, vendorDetialsUpdate, vendorDetialsDelete,
@@ -12,6 +12,8 @@ const { getAllVendor, vendorCreate, getVendorDetials, vendorDetialsUpdate, vendo
 /** * Employee Controller  */
 const { employeeCreate, employeeAll, getEmployee, employeeUpdate, employeeDelete, employeeStatus, 
     employeeResetPassword } = require('./controllers/employeeController');    
+
+const { allRole, roleCreate, getRole, roleUpdate, roleDelete }  = require('./controllers/roleController');
 
 /** * validation helper  */
 const authenticateToken = require('./helpers/verifyjwt')
@@ -27,8 +29,8 @@ routes.get('/user/detail', authenticateToken,  getUserDetail)
 routes.post('/user/forgot-password', userForgotPassword)
 routes.post('/user/otp-verify', userOtpVerify)
 routes.post('/user/reset-password', userResetPassword)
-routes.post('/user/upload-profile/:userID', userUploadProfile)
-
+routes.post('/user/upload-profile/:userID',authenticateToken, userUploadProfile)
+routes.post('/user/update/:userID',authenticateToken, userDetailsUpdate)
 
 
 /** * Vendor Routes */
@@ -39,6 +41,7 @@ routes.post('/vendor/otp-verify', vendorOtpVerify)
 routes.post('/vendor/change-password', vendorChangePassword)
 routes.post('/vendor/request', vendorRequest)
 routes.post('/vendor/upload-profile/:vendorID', authenticateVendorToken, vendorUploadProfile)
+routes.put('/vendor/details-update/:vendorID', authenticateVendorToken, vendorDetialsUpdate)
 
 // ----- vendor routes for admin ------
 routes.get('/vendor/all', authenticateToken,  getAllVendor)
@@ -62,5 +65,14 @@ routes.put('/employee/update/:employeeID', authenticateToken,  employeeUpdate)
 routes.put('/employee/status/:employeeID', authenticateToken,  employeeStatus)
 routes.put('/employee/reset-password/:employeeID', authenticateToken,  employeeResetPassword)
 routes.delete('/employee/delete/:employeeID', authenticateToken,  employeeDelete)
+
+
+/** Roles Routes */
+routes.get('/role/all', authenticateToken,  allRole)
+routes.get('/role/:roleID', authenticateToken,  getRole)
+routes.post('/role/create', authenticateToken,  roleCreate)
+routes.put('/role/update/:roleID', authenticateToken,  roleUpdate)
+routes.delete('/role/delete/:roleID', authenticateToken,  roleDelete)
+
 
 module.exports = routes

@@ -256,8 +256,37 @@ try{
 }
 }
 
+/**
+ * update user detials
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const userDetailsUpdate = async (req, res) => {
+    try{
+        const userID = req.params.userID;
+        const { first_name, last_name, email, phone } = req.body;
+        const {user_id} = req.user;
+
+        const updateQuery = `UPDATE user SET first_name='${first_name}',last_name='${last_name}', 
+        email='${email}', phone='${phone}', updated_by='${user_id}' 
+        WHERE id=${userID}`;
+
+        con.query(updateQuery, async (updateError, updateResult) => {
+            if(updateError) return res.status(500).json({status:false, message:updateError});
+            if(updateResult.affectedRows > 0){
+                return res.status(200).json({status:true, message:"User detials update successfully"});
+            }
+        });
+    }catch(error){
+        return res.status(500).json({status:false, message:error.message});
+    }
+}
+
+
+
 
 module.exports = {
     getAllUsers, createUser, loginUser, getUserDetail, userForgotPassword, userOtpVerify,
-    userResetPassword, userUploadProfile
+    userResetPassword, userUploadProfile, userDetailsUpdate
 }

@@ -491,7 +491,8 @@ const vendorRequestApprove = async (req, res) => {
                 const salt = bcrypt.genSaltSync(10);
                 const hashPassword = await bcrypt.hash(password, salt);
 
-                const insertQuery = `INSERT INTO vendor (user_name, password, business_name, business_phone, 
+                const insertQuery = `INSERT INTO vendor (user_name, password, business_name,
+                 business_phone, 
                 business_email, business_address, created_by)
                 VALUES ('${user_name}', '${hashPassword}','${business_name}','${business_phone}',
                 '${business_email}','${business_address}','${user_id}')`;
