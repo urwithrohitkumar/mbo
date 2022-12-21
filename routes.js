@@ -30,7 +30,7 @@ routes.post('/user/forgot-password', userForgotPassword)
 routes.post('/user/otp-verify', userOtpVerify)
 routes.post('/user/reset-password', userResetPassword)
 routes.post('/user/upload-profile/:userID',authenticateToken, userUploadProfile)
-routes.post('/user/update/:userID',authenticateToken, userDetailsUpdate)
+routes.put('/user/update/:userID',authenticateToken, userDetailsUpdate)
 
 
 /** * Vendor Routes */
@@ -73,6 +73,8 @@ routes.get('/role/:roleID', authenticateToken,  getRole)
 routes.post('/role/create', authenticateToken,  roleCreate)
 routes.put('/role/update/:roleID', authenticateToken,  roleUpdate)
 routes.delete('/role/delete/:roleID', authenticateToken,  roleDelete)
+
+
 
 
 module.exports = routes

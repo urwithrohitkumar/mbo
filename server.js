@@ -29,7 +29,7 @@ con.connect(function (err) {
 app.get("/",function(request,response){
 	response.send("welcome")
 });
-app.use("/api/v1", routes);
+app.use("/mbo", routes);
 app.listen(port, function () {
 	console.log("Started application on port %d", port)
 });
